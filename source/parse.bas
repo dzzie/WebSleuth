@@ -1,9 +1,9 @@
-Attribute VB_Name = "parse"
+Attribute VB_Name = "encoding"
 Private Type lib 'b64 conversion library
   b64Chr(65) As String
   binHex(16) As String
   hexChr(16) As String
-  Init As Boolean
+  init As Boolean
 End Type
 
 Private lib As lib
@@ -14,19 +14,19 @@ Private escAr2() 'characters not always escaped
 Public Function parseHtml(info) As String
      Dim temp As String, EndOfTag As Integer
      fmat = Replace(info, "&nbsp;", " ")
-     cut = Split(fmat, "<")
+     Cut = Split(fmat, "<")
 
-   For i = 0 To UBound(cut)
-     EndOfTag = InStr(1, cut(i), ">")
+   For i = 0 To UBound(Cut)
+     EndOfTag = InStr(1, Cut(i), ">")
         If EndOfTag > 0 Then
-          EndOfText = Len(cut(i))
+          EndOfText = Len(Cut(i))
           NL = False
-          If Left(cut(i), 2) = "br" Then NL = True
-          cut(i) = Mid(cut(i), EndOfTag + 1, EndOfText)
-          If NL Then cut(i) = vbCrLf & cut(i)
-          If cut(i) = vbCrLf Then cut(i) = ""
+          If Left(Cut(i), 2) = "br" Then NL = True
+          Cut(i) = Mid(Cut(i), EndOfTag + 1, EndOfText)
+          If NL Then Cut(i) = vbCrLf & Cut(i)
+          If Cut(i) = vbCrLf Then Cut(i) = ""
         End If
-     temp = temp & cut(i)
+     temp = temp & Cut(i)
     Next
     
     parseHtml = temp
@@ -34,7 +34,7 @@ End Function
 
 Function ParseScript(info)
   Dim trimpage
-  info = filt(info, "javascript,vbscript,mocha,createobject,activex,onclick,onmouse,onscroll,onkey,onload")
+  info = filt(info, "javascript,vbscript,mocha,createobject,activex,onclick,onmouse,onscroll,onkey,onload,onsubmit")
   scr = Split(info, "<script", , vbTextCompare)
   
   If aryIsEmpty(scr) Then ParseScript = info: Exit Function _
@@ -127,7 +127,7 @@ End Function
 
 Private Function b64EncodeEngine(it)
    On Error GoTo warn
-    If Not lib.Init Then initAlpha
+    If Not lib.init Then initAlpha
     
     Dim str As String  'it= BASE 1 string array of characters
     Dim s() As String  'returns BASE 1 string array of chars
@@ -162,12 +162,12 @@ Private Function b64EncodeEngine(it)
     
     b64EncodeEngine = s 'BASE 1 string arrary of characters
 Exit Function
-warn: MsgBox "Err in B64EncodeEngine. This function accepts (and returns) only base 1 string arrays of individual characters" & vbCrLf & vbCrLf & Err.description
+warn: MsgBox "Err in B64EncodeEngine. This function accepts (and returns) only base 1 string arrays of individual characters" & vbCrLf & vbCrLf & Err.Description
 End Function
 
 Private Function b64DecodeEngine(it)
  On Error GoTo warn
-  If Not lib.Init Then initAlpha
+  If Not lib.init Then initAlpha
   
   Dim s() As String        'it = BASE 1 string array of characters
   ReDim s(1 To UBound(it)) 'returns BASE 1 string array of characters
@@ -201,7 +201,7 @@ Private Function b64DecodeEngine(it)
             
   b64DecodeEngine = s 'returns BASE 1 string array of characters
 Exit Function
-warn: MsgBox "Err in B64DecodeEngine. This function accepts(and returns) only base 1 string arrays of individual characters" & vbCrLf & vbCrLf & Err.description
+warn: MsgBox "Err in B64DecodeEngine. This function accepts(and returns) only base 1 string arrays of individual characters" & vbCrLf & vbCrLf & Err.Description
 End Function
 
 Private Function segment(str As String, div As Integer)
@@ -272,16 +272,16 @@ Private Function Hex2Bin(it As String) As String
 End Function
 
 Private Function b64Asc(it) As Integer
-   Start = Asc(it)
-   If Start > 64 And Start < 91 Then
-      Start = 0
-   ElseIf Start > 96 And Start < 123 Then
-      Start = 26
+   start = Asc(it)
+   If start > 64 And start < 91 Then
+      start = 0
+   ElseIf start > 96 And start < 123 Then
+      start = 26
    Else
-      Start = 52
+      start = 52
    End If
    
-   For i = Start To 64
+   For i = start To 64
      If InStr(1, lib.b64Chr(i), it, vbBinaryCompare) > 0 Then
         b64Asc = i
         Exit For
@@ -326,7 +326,7 @@ Private Sub initAlpha()
     .hexChr(4) = "4": .hexChr(10) = "A": .hexChr(15) = "F"
     .hexChr(5) = "5"
     
-    .Init = True
+    .init = True
   End With
 End Sub
 

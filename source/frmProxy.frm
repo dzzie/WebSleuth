@@ -96,14 +96,13 @@ Private Declare Function OpenProcess Lib "kernel32" (ByVal dwDesiredAccess As Lo
 Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Long, lpExitCode As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
 
-Dim pth As String, pList As String, proxies() As String
+Dim pth As String, proxies() As String
 
 Private Sub Form_Load()
     pth = "Software\Microsoft\windows\CurrentVersion\Internet Settings"
-    pList = App.path & "\ProxyList.txt"  'below for use in IDE
-    If Not FileExists(pList) Then pList = App.path & ".\..\ProxyList.txt"
-    If FileExists(pList) Then
-        proxies() = Split(ReadFile(pList), vbCrLf)
+    
+    If FileExists(ProxyListFile) Then
+        proxies() = Split(ReadFile(ProxyListFile), vbCrLf)
         If Not aryIsEmpty(proxies) Then
             For i = 0 To UBound(proxies)
                 If proxies(i) <> Empty Then Combo1.AddItem proxies(i)
@@ -111,7 +110,7 @@ Private Sub Form_Load()
         End If
         Combo1.ListIndex = 0
     Else
-        MsgBox "Oops..couldnt find default proxy list" & vbCrLf & vbCrLf & pList
+        MsgBox "Oops..couldnt find default proxy list" & vbCrLf & vbCrLf & ProxyListFile
     End If
     Text1 = reg.ReadValue(HKEY_CURRENT_USER, pth, "ProxyServer")
     Check1 = reg.ReadValue(HKEY_CURRENT_USER, pth, "ProxyEnable")
@@ -122,7 +121,7 @@ Private Sub cmdCancel_Click()
 End Sub
 
 Private Sub cmdManage_Click()
-    ShellnWait "notepad """ & pList, vbNormalFocus
+    ShellnWait "notepad """ & ProxyListFile, vbNormalFocus
     Combo1.Clear
     Form_Load
 End Sub

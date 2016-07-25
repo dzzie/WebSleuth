@@ -1,0 +1,3 @@
+Sleuth HomePage=http://geocities.com/dzzie/sleuth
+Google Advanced Search=http://www.google.com/advanced_search?hl=en
+owasp.org=http://owasp.org/

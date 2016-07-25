@@ -44,12 +44,16 @@ Property Get Count() As Long
   Count = lst.ListCount
 End Property
  
-Property Get Value(index As Long)
-    Value = lst.List(index)
+Property Get value(index As Long)
+    value = lst.List(index)
 End Property
  
 Property Get SelectedText() As String
     SelectedText = lst.List(lst.ListIndex)
+End Property
+
+Property Let SelectedText(newTxt As String)
+    lst.List(lst.ListIndex) = newTxt
 End Property
 
 Property Get SelectedIndex() As Long
@@ -142,12 +146,12 @@ Private Sub lst_DblClick()
     RaiseEvent DoubleClick
 End Sub
 
-Private Sub lst_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lst_MouseDown(Button As Integer, Shift As Integer, x As Single, Y As Single)
     If Button = 2 Then RaiseEvent RightClick
 End Sub
 
-Private Sub lst_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If FileExists(Data.Files(1)) Then LoadFile Data.Files(1)
+Private Sub lst_OLEDragDrop(data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, Y As Single)
+    If FileExists(data.Files(1)) Then LoadFile data.Files(1)
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -158,7 +162,7 @@ End Sub
 Private Sub UserControl_Resize()
    lst.Height = UserControl.Height
    lst.Width = UserControl.Width
-   'because lists only allow heights on vertain increments
+   'because lists only allow heights on certain increments
    UserControl.Height = lst.Height
    UserControl.Width = lst.Width
 End Sub
@@ -196,18 +200,18 @@ Private Sub AppendFile(path, it)
     Close f
 End Sub
 
-Private Sub push(ary, Value) 'this modifies parent ary object
-    On Error GoTo Init
-    X = UBound(ary) '<-throws Error If Not initalized
+Private Sub push(ary, value) 'this modifies parent ary object
+    On Error GoTo init
+    x = UBound(ary) '<-throws Error If Not initalized
     ReDim Preserve ary(UBound(ary) + 1)
-    ary(UBound(ary)) = Value
+    ary(UBound(ary)) = value
     Exit Sub
-Init: ReDim ary(0): ary(0) = Value
+init: ReDim ary(0): ary(0) = value
 End Sub
 
 Private Function aryIsEmpty(ary) As Boolean
   On Error GoTo oops
-    X = UBound(ary)
+    x = UBound(ary)
     aryIsEmpty = False
   Exit Function
 oops: aryIsEmpty = True

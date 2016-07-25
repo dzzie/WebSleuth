@@ -1,0 +1,98 @@
+Notes are auto saved every time you leave the tab just in case
+
+they will persist across run unless you empty out the textbox 
+and swap tabs..then they will be cleared...kinda nice, kinda
+scary.
+
+just so ya know.
+
+
+So Whats New in Sleuth 1.3 ?
+
+Well as you can see we have some spiffy new UI features here like the Tabs
+you will also find them on the Raw Request form. Hopefully these will help 
+reduce clutter and give me a nice canvas to expand features without making
+the whole program  to complex to use.
+
+New Stuff:
+
+Select some text in the browser then goto edit source..you are now only editing that
+selected chunk of the webpage ! (This is so very handy trust me. gracias to the Pull for
+ideas on just how to implement it)
+
+It is now your choice to Highlight page source or not (because it can take awhile ):
+
+It is now your choice if you want to update browser window after source viewing..
+dont forget though because once you switch you tabs all changes are lost. Source view
+will be refilled fresh on tab click next time.
+
+Ummm...I have added alot of logic in the Raw Request form. It is still only winsock and no SSL
+yet but it should be way more efficient to use. changes include:
+
+timeout timer: jsut incase you enter bad server whatever
+now you get feedback in caption as to progress
+can now generate POST headers automatically
+can be initilized off a form index to raw post form (this is hard needs more logic)
+
+added query string analyzer that breaks down elements and holds in list to edit
+    in the reuest header the query string is rplaced with <QUERYSTRING>
+    all of the arguments are held in lower listbox to view and edit
+    if you want to edit them double click, when you make the actual request the marker
+    <QUERYSTRING> will be automatically replaced by actual query string cool huh
+
+if you think that is not cool..then just hit the check box and turn it off :P (preference saved)
+be careful abotu escaped arguments...since this is such a complex flow of events and can be
+initalized from so mny places you are on your own..I will try to help out more eventually 
+(cause well I am lazy and hate repetive tasks) btu there is no smart logic yet
+
+I have had a flood of ideas these last couple days (if you cant tell) and hey I am even 
+motivated again ! yay !
+
+so ummm hummm I am sure there is more but I cant rember :(
+
+oghh Source tab replace and find recgonize constants like <TAB>, <CR>, <LF>, and <CRLF>
+in case you want to unindent some annoying code or whatever..rember that because i will forget.
+(and thats why this is a NOTES tab !) ha
+
+I am sorry..I amuse myself even if no others :P
+
+ok guess thats it...dzzie over and out
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

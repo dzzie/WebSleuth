@@ -90,9 +90,8 @@ Dim idx() As String 'parentIndex,subframeIndex,subframe2Index
 Dim waiting As Boolean
 
 Sub ListFrames()
-    Me.Show
-    WipeStrAry ret()
-    WipeStrAry idx()
+    Erase ret()
+    Erase idx()
     List1.Clear
     GenList frmMain.wb.Document, Empty, Empty
     If Not aryIsEmpty(ret) Then
@@ -100,6 +99,7 @@ Sub ListFrames()
             List1.AddItem ret(i)
         Next
     End If
+    If List1.ListCount > 0 Then Me.Show
 End Sub
 
 Private Sub GenList(d As HTMLDocument, parentStr, indexStr)
@@ -115,20 +115,23 @@ Private Sub GenList(d As HTMLDocument, parentStr, indexStr)
         Next
 End Sub
 
+Function AnyAccessibleFrames() As Boolean
+    Call ListFrames
+    If List1.ListCount > 0 Then AnyAccessibleFrames = True
+End Function
+
 Function ReturnFrameIndex()
     Call ListFrames
     waiting = True
+    
+    If List1.ListCount = 0 Then waiting = False
     
     While waiting
         DoEvents
         Sleep 100
     Wend
     
-    If SeldListIndex >= 0 Then
-        ReturnFrameIndex = Text1
-    Else
-        ReturnFrameIndex = Empty
-    End If
+    ReturnFrameIndex = Text1
     
     Me.Hide
     Text1 = Empty

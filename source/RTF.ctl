@@ -65,9 +65,9 @@ End Type
 
 Private Declare Function GetTextMetrics Lib "gdi32" Alias "GetTextMetricsA" (ByVal hdc As Long, lpMetrics As TEXTMETRIC) As Long
 Private Declare Function SetMapMode Lib "gdi32" (ByVal hdc As Long, ByVal nMapMode As Long) As Long
-Private Declare Function GetWindowDC Lib "User32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "User32" (ByVal hWnd As Long, ByVal hdc As Long) As Long
-Private Declare Function SendMessageLong Lib "User32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hdc As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private Const MM_TWIPS = 6
 Private Const EM_LINEINDEX = &HBB
@@ -78,31 +78,121 @@ Private Const EM_LINEFROMCHAR = &HC9
 Private startAt As Long
 Private findWhat As String
 Private ww As Boolean
+Private dirty As Boolean
 
 Public Event RightClick()
+Public Event KeyPress(keyCode As Integer)
 
 Public Property Let text(it)
     rtb.text = it
+    dirty = False
 End Property
 
 Public Property Get text()
     text = rtb.text
 End Property
 
+Public Property Get IsDirty() As Boolean
+    IsDirty = dirty
+End Property
+Public Property Let IsDirty(x As Boolean)
+    dirty = x
+End Property
+
 Public Property Get FindString()
-    FindString = findWhat
+    FindString = CollapseConstants(findWhat)
 End Property
 
 Public Property Let FindString(it)
-    findWhat = CStr(it)
+    findWhat = ExpandConstants(it)
 End Property
+
+Function ExpandConstants(ByVal strIn) As String
+    strIn = Replace(strIn, "<TAB>", vbTab, , , vbTextCompare)
+    strIn = Replace(strIn, "<CRLF>", vbCrLf, , , vbTextCompare)
+    strIn = Replace(strIn, "<CR>", vbCr, , , vbTextCompare)
+    ExpandConstants = CStr(Replace(strIn, "<LF>", vbLf, , , vbTextCompare))
+End Function
+
+Function CollapseConstants(ByVal strIn) As String
+    strIn = Replace(strIn, vbTab, "<TAB>", , , vbTextCompare)
+    strIn = Replace(strIn, vbCrLf, "<CRLF>", , , vbTextCompare)
+    strIn = Replace(strIn, vbCr, "<CR>", , , vbTextCompare)
+    CollapseConstants = CStr(Replace(strIn, vbLf, "<LF>", , , vbTextCompare))
+End Function
 
 Public Property Let WordWrap(on_ As Boolean)
     ww = on_
     If on_ Then rtb.rightMargin = 0 Else Call SetRightMargain
 End Property
 
-Private Sub rtb_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Public Property Get WordWrap() As Boolean
+    WordWrap = ww
+End Property
+
+Public Property Let SelText(txt)
+    rtb.SelText = txt
+End Property
+
+Public Property Get SelText()
+    SelText = rtb.SelText
+End Property
+
+Public Property Let SelStart(x)
+    rtb.SelStart = x
+End Property
+
+Public Property Get SelStart()
+    SelStart = rtb.SelStart
+End Property
+
+Public Property Let SelLen(x)
+    rtb.SelLength = x
+End Property
+
+Public Property Get SelLen()
+    SelLen = rtb.SelLength
+End Property
+
+Public Property Let Enabled(t As Boolean)
+    rtb.Enabled = t
+End Property
+
+Public Property Get Enabled() As Boolean
+    Enabled = rtb.Enabled
+End Property
+
+Public Property Get hWnd() As Long
+    hWnd = rtb.hWnd
+End Property
+
+Sub SelSpan(start, length)
+    On Error Resume Next
+    rtb.SelStart = start
+    rtb.SelLength = length
+End Sub
+
+Sub CopySelection()
+    If rtb.SelLength < 1 Then Exit Sub
+    Clipboard.Clear
+    Clipboard.SetText rtb.SelText
+End Sub
+
+Sub Cut()
+    CopySelection
+    rtb.SelText = Empty
+End Sub
+
+Sub SelectAll()
+    rtb.SelStart = 0
+    rtb.SelLength = Len(rtb.text)
+End Sub
+
+Private Sub rtb_Change()
+    dirty = True
+End Sub
+
+Private Sub rtb_MouseDown(Button As Integer, Shift As Integer, x As Single, Y As Single)
     If Button = 2 Then RaiseEvent RightClick
 End Sub
 
@@ -120,38 +210,38 @@ Sub ScrollToTop()
 End Sub
 
 Sub ReplaceText(find, changeTo)
-    rtb.text = Replace(rtb.text, find, changeTo, , , vbTextCompare)
+    rtb.text = Replace(rtb.text, ExpandConstants(find), ExpandConstants(changeTo), , , vbTextCompare)
 End Sub
 
 Sub SetColor(str, Optional color As ColorConstants = vbBlack, Optional fSize = 10, Optional bold As Boolean = False, Optional italic As Boolean = False)
     Y = 1
-    X = rtb.find(str, Y)
-    While X > 0
-        rtb.SelStart = X
+    x = rtb.find(str, Y)
+    While x > 0
+        rtb.SelStart = x
         rtb.SelLength = Len(str)
         rtb.SelColor = color
         rtb.SelBold = bold
         rtb.SelItalic = italic
         rtb.SelFontSize = fSize
-        Y = X + 1
-        X = rtb.find(str, Y)
+        Y = x + 1
+        x = rtb.find(str, Y)
     Wend
 End Sub
 
 Sub SetSpanColor(startStr, endStr, Optional color = &HFFFFFF, Optional fSize = 10, Optional bold As Boolean = False, Optional italic As Boolean = False)
     On Error Resume Next
     Y = 1
-    X = rtb.find(startStr, Y)
+    x = rtb.find(startStr, Y)
     z = rtb.find(endStr, Y)
-    While X > 0 And z > 0
-        rtb.SelStart = X
-        rtb.SelLength = z - X + Len(endStr)
+    While x > 0 And z > 0
+        rtb.SelStart = x
+        rtb.SelLength = z - x + Len(endStr)
         rtb.SelColor = color
         rtb.SelBold = bold
         rtb.SelItalic = italic
         rtb.SelFontSize = fSize
         Y = z + 1 + Len(endStr)
-        X = rtb.find(startStr, Y)
+        x = rtb.find(startStr, Y)
         z = rtb.find(endStr, Y)
     Wend
 End Sub
@@ -165,15 +255,15 @@ Sub MatchSize(it As Object)
 End Sub
 
 Sub find()
-    findWhat = InputBox("Find:", , findWhat)
+    'findWhat = InputBox("Find:", , findWhat)
     If findWhat = Empty Then Exit Sub
     Me.ScrollToTop
     startAt = 1
-    X = rtb.find(findWhat)
-    If X > 0 Then
-        rtb.SelStart = X
+    x = rtb.find(findWhat)
+    If x >= 0 Then
+        rtb.SelStart = x
         rtb.SelLength = Len(findWhat)
-        startAt = X + 1
+        startAt = x + 1
     Else
         MsgBox "String Not Found", vbInformation
     End If
@@ -181,11 +271,11 @@ End Sub
 
 Sub findNext()
     If findWhat = Empty Then Exit Sub
-    X = rtb.find(findWhat, startAt)
-    If X > 0 And startAt < (Len(rtb.text) - 1) Then
-        rtb.SelStart = X
+    x = rtb.find(findWhat, startAt)
+    If x > 0 And startAt < (Len(rtb.text) - 1) Then
+        rtb.SelStart = x
         rtb.SelLength = Len(findWhat)
-        startAt = X + 1
+        startAt = x + 1
     Else
         startAt = 1
         MsgBox "Search Complete", vbInformation
@@ -197,10 +287,17 @@ Private Sub rtb_KeyPress(KeyAscii As Integer)
     Select Case KeyAscii
         Case 6: find
         Case 4: findNext
-        Case Else: 'msgBox KeyAscii
+        Case Else: RaiseEvent KeyPress(KeyAscii)
     End Select
 End Sub
 
+Sub AppendIt(it)
+    rtb.text = rtb.text & it
+End Sub
+
+Sub PrePendIt(it)
+    rtb.text = it & rtb.text
+End Sub
 
 Sub SetRightMargain()
     Dim tm As TEXTMETRIC
@@ -229,4 +326,12 @@ Sub SetRightMargain()
     rtb.rightMargin = ret * tm.tmMaxCharWidth
 End Sub
 
-
+Sub highlightHtml()
+    SetSpanColor "<form", ">", vbRed, , True
+    SetColor "</form>", vbRed, , True
+    SetColor "<input", vbBlue, , True
+    SetColor "<script", &HC000C0, , True
+    SetColor "</script>", &HC000C0, , True
+    SetSpanColor "<!--", "-->", &H808000
+    ScrollToTop
+End Sub

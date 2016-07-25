@@ -2,6 +2,72 @@
 
 ChangeLog
 
+Release 1.3.1 
+		Added Features: 
+			
+			Toolbox -> Advanced -> Window Sniper
+				Lets you snag source and stats on standard IE windows
+				great for modal popups or places you cant seem to get
+				with main sleuth. Amazing code from Eduardo A. Morcillo
+				
+				http://www.domaindlx.com/e_morcillo/default.asp
+			
+
+			Cookie on top - new form to watch cookies realtime <--very cool
+
+			Navigate To Frame - gives you frameover so you can 
+				snap browser right to specific frame <--nice
+				beats old way of having to nav through frameset
+
+			Color Find button in source view: Highlights all instances 
+				of phrase in find box to specified color.
+
+			Dirty Source Prompt - remind you to update IE after source edit
+			Use Mouse Over Nav bar - eyecandy 
+
+		Changed Behaviors:
+			Source is only set when you go from browser to source..this way
+				you can make changes, goto other tabs and come back
+				and not loose changes	
+
+		Bug Fixes:
+			   ouch found a couple residual bugs from all the changes :(
+			   Fixed crash in Raw request response box right click
+			   Fixed err induced in register plugin routines
+		
+		Bugs: I know updated frmRawRequest has some logic bugs I will hop on
+			it soon mabey i over did the behaviors :P
+
+
+
+Release 1.3 Major release
+		Added in reference to tab control for frmRawreq and frmMain..
+			if it complains about no TABCTL32.OCX it is included
+			in the new zip just run the vbs installer script for it
+
+		options are now checkboxes..easier to set see options tab
+			more to come there
+
+		When you edit source two new features:
+			1) if you have a selection in IE..you only edit that <--neat
+			2) once you are done editing...you MUST CLICK UPDATE IE to save
+
+		frmRawRequest is entirly new and hopefully more efficient !
+
+		Extract forms -> right click -> raw request now initilizes off form!
+
+		Access to Internet Options dialogue built in
+
+		Can now extract embeded script automatically Extract Scripts and see :)
+
+		Very major UI changes...so new bugs are quite possible...but should
+			be much more usable
+
+		Almost have winInet api raw request form done so you will soon be 
+			able to make ssl raw requests...messy api there :(
+
+		Probably more, but ughh..me brain is fried...
+
 Release 1.2.34b minor release - March 8
 		
 		another bug fix for iframed pages not allowing source editing

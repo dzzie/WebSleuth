@@ -1,14 +1,29 @@
-Attribute VB_Name = "StdFx"
-Declare Function LockWindowUpdate Lib "User32" (ByVal hwndLock As Long) As Long
-Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Attribute VB_Name = "SleuthFx"
+Public Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
+Public Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
+Public Declare Function LockWindowUpdate Lib "user32" (ByVal hwndLock As Long) As Long
+Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Declare Sub SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long)
 
 Private Declare Function FreeLibrary Lib "kernel32" (ByVal hLibModule As Long) As Long
 Private Declare Function LoadLibrary Lib "kernel32" Alias "LoadLibraryA" (ByVal lpLibFileName As String) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function CallWindowProc Lib "User32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
+Private Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Any, ByVal wParam As Any, ByVal lParam As Any) As Long
+
+Public Const HWND_TOPMOST = -1
+Public Const HWND_NOTOPMOST = -2
+Public Const SWP_SHOWWINDOW = &H40
+
+Public Type POINTAPI
+    X As Long
+    Y As Long
+End Type
 
 Global Plugin() As Object
 Global RegisteredPlugins() As String
+
+Global objSelection As Object
+Global objSelDocument As HTMLDocument
 
 '--------------------------------------------------------------------
 'Main Entry Point into Program
@@ -17,17 +32,24 @@ Sub Main()
     Load frmMain
     LoadPlugins
     frmMain.Show
+    frmRawRequest.Hide
+    ' so wacky...the testinputs plugin adds a menu item to
+    ' this form, that is enough make the form load and show
+    ' i guess that makes sense but was weird to find
 End Sub
 
 
 '-------------------------------------------------------------------------
 'PlugIn Code
 '-------------------------------------------------------------------------
-Private Sub LoadPlugins()
+Sub LoadPlugins()
+    If Not CBool(frmMain.chkLoadPlugins.value) Then Exit Sub
+    
     Dim tmp() As String
     ReDim Plugin(0)
-    tmp = GetFolderFiles(App.path & "\Plugins", "*dll")
-    'tmp = GetFolderFiles("D:\Projects\web sleuth\Plugins", "*dll")
+    BasePath = App.path & "\Plugins"
+    If Not FolderExists(BasePath) Then BasePath = App.path & "\..\Plugins"
+    tmp = GetFolderFiles(BasePath, "*dll")
     On Error GoTo oops
     If aryIsEmpty(tmp) Then Exit Sub
     For i = 0 To UBound(tmp)
@@ -60,8 +82,9 @@ End Sub
 
 Private Function trytoRegister(dllName) As Boolean
     If MsgBox("New Plugin Found Would you like to register " & dllName & ".dll?" & vbCrLf & vbCrLf & "Note that running plugins from untrusted parties is the same as running an untrusted exe!", vbYesNo + vbExclamation) = vbYes Then
-        dllpath = App.path & "\Plugins\" & dllName & ".dll"
-        'dllpath = "D:\Projects\web sleuth\Plugins\" & dllName & ".dll"
+        BasePath = App.path & "\Plugins"
+        If Not FolderExists(BasePath) Then BasePath = App.path & "\..\Plugins"
+        dllpath = BasePath & "\" & dllName & ".dll"
         If FileExists(dllpath) Then
            trytoRegister = RegisterServer(CStr(dllpath))
         Else
@@ -96,227 +119,6 @@ Sub FirePluginEvent(index As Integer, connectionString)
     Exit Sub
 oops: MsgBox "Plugin failed!, Plugin String: " & RegisteredPlugins(i) & vbCrLf & "Error: " & Err.Description
 End Sub
-
-
-'--------------------------------------------------------------------
-' File system and path parsing functions
-'--------------------------------------------------------------------
-Function GetBaseName(path) As String
-    tmp = Split(path, "\")
-    ub = tmp(UBound(tmp))
-    If InStr(1, ub, ".") > 0 Then
-       GetBaseName = Mid(ub, 1, InStrRev(ub, ".") - 1)
-    Else
-       GetBaseName = ub
-    End If
-End Function
-
-Function ReadFile(filename)
-  f = FreeFile
-  temp = ""
-   Open filename For Binary As #f        ' Open file.(can be text or image)
-     temp = Input(FileLen(filename), #f) ' Get entire Files data
-   Close #f
-   ReadFile = temp
-End Function
-
-Sub WriteFile(path, it)
-    f = FreeFile
-    Open path For Output As #f
-    Print #f, it
-    Close f
-End Sub
-
-Sub AppendFile(path, it)
-    f = FreeFile
-    Open path For Append As #f
-    Print #f, it
-    Close f
-End Sub
-
-Function FileExists(path) As Boolean
-  If Dir(path, vbHidden Or vbNormal Or vbReadOnly Or vbSystem) <> "" Then FileExists = True _
-  Else FileExists = False
-End Function
-
-Function FolderExists(path) As Boolean
-  If Dir(path, vbDirectory) <> "" Then FolderExists = True _
-  Else FolderExists = False
-End Function
-
-Function SafeFileName(proposed) As String
-  badChars = ">,<,&,/,\,:,|,?,*,"""
-  bad = Split(badChars, ",")
-  For i = 0 To UBound(bad)
-    proposed = Replace(proposed, bad(i), "")
-  Next
-  SafeFileName = CStr(proposed)
-End Function
-
-Function GetFolderFiles(folder, Optional filter = ".*", Optional retFullPath As Boolean = True) As String()
-   Dim fnames() As String
-   
-   If Not FolderExists(folder) Then
-        'returns empty array if fails
-        GetFolderFiles = fnames()
-        'MsgBox "hey no folder!"
-        Exit Function
-   End If
-   
-   folder = IIf(Right(folder, 1) = "\", folder, folder & "\")
-   If Left(filter, 1) = "*" Then extension = Mid(filter, 2, Len(filter))
-   If Left(filter, 1) <> "." Then filter = "." & filter
-   
-   fs = Dir(folder & "*" & filter, vbHidden Or vbNormal Or vbReadOnly Or vbSystem)
-   While fs <> ""
-     If fs <> "" Then push fnames(), IIf(retFullPath = True, folder & fs, fs)
-     fs = Dir()
-   Wend
-   
-   GetFolderFiles = fnames()
-End Function
-
-Function WebParentFolderFromURL(url) As String
-    If url = Empty Or InStr(url, "/") < 1 Then Exit Function
-    tmp = Split(url, "/")
-    If InStr(tmp(UBound(tmp)), ".") > 0 Then tmp(UBound(tmp)) = Empty
-    tmp = Join(tmp, "/")
-    If Right(tmp, 2) = "//" Then tmp = Mid(tmp, 1, Len(tmp) - 1)
-    WebParentFolderFromURL = CStr(tmp)
-End Function
-
-Function WebFileNameFromPath(fullpath)
-    If InStr(fullpath, "/") > 0 Then
-        tmp = Split(fullpath, "/")
-        WebFileNameFromPath = tmp(UBound(tmp))
-    End If
-End Function
-
-Sub UseIE_DDE_GETCurrentPageURL(t As TextBox)
-  On Error GoTo nope
-    t.LinkTopic = "iexplore|WWW_GetWindowInfo"
-    t.LinkItem = &HFFFFFFFF
-    t.LinkMode = 2
-    t.LinkRequest
-    t.LinkTopic = Empty
-    tmp = Split(t, ",")
-    t = Replace(tmp(0), """", Empty)
-  Exit Sub
-nope: t.text = "about:blank"
-End Sub
-
-'-------------------------------------------------------------------
-' general library functions
-'-------------------------------------------------------------------
-Function filt(txt, Remove As String)
-  If Right(txt, 1) = "," Then txt = Mid(txt, 1, Len(txt) - 1)
-  tmp = Split(Remove, ",")
-  For i = 0 To UBound(tmp)
-     txt = Replace(txt, tmp(i), "", , , vbTextCompare)
-  Next
-  filt = txt
-End Function
-
-Function IsHex(it)
-    On Error GoTo out
-      IsHex = Chr(Int("&H" & it))
-    Exit Function
-out:  IsHex = Empty
-End Function
-
-Sub push(ary, value) 'this modifies parent ary object
-    On Error GoTo init
-    ReDim Preserve ary(UBound(ary) + 1) '<-throws Error If Not initalized
-    ary(UBound(ary)) = value
-    Exit Sub
-init: ReDim ary(0): ary(0) = value
-End Sub
-
-Function UnixToDos(it) As String
-    If InStr(it, vbLf) > 0 Then
-        tmp = Split(it, vbLf)
-        For i = 0 To UBound(tmp)
-            If InStr(tmp(i), vbCr) < 1 Then tmp(i) = tmp(i) & vbCr
-        Next
-        UnixToDos = Join(tmp, vbLf)
-    Else
-        UnixToDos = CStr(it)
-    End If
-End Function
-
-Function BatchReplace(ByVal it, them, Optional compare As VbCompareMethod = vbTextCompare) As String
-    'it=data string, them="changeThis->toThis,andThis->toThat"
-    t = Split(them, ",")
-    For i = 0 To UBound(t)
-        If InStr(t(i), "->") > 1 Then
-            s = Split(t(i), "->")
-            it = Replace(it, s(0), s(1), , , compare)
-        End If
-    Next
-    BatchReplace = CStr(it)
-End Function
-
-Sub ShowRtClkMenu(f As Form, t As TextBox, m As Menu)
-        LockWindowUpdate t.hWnd
-        t.Enabled = False
-        DoEvents
-        f.PopupMenu m
-        t.Enabled = True
-        LockWindowUpdate 0&
-End Sub
-
-Function aryIsEmpty(ary) As Boolean
-    On Error GoTo oops
-    x = UBound(ary)
-    aryIsEmpty = False
-    Exit Function
-oops: aryIsEmpty = True
-End Function
-
-Function CountOccurances(it, find) As Integer
-    If InStr(1, it, find, vbTextCompare) < 1 Then CountOccurances = 0: Exit Function
-    tmp = Split(it, find, , vbTextCompare)
-    CountOccurances = UBound(tmp)
-End Function
-
-Sub WipeStrAry(ary)
-    Dim tmp() As String
-    ary = tmp
-End Sub
-
-Function GetPathsInStep(fullpath) As String()
-    Dim ret() As String
-    'fullpath = var/www/htdocs/
-    'ret(0) = fullpath
-    'ret(1) = var/
-    'ret(2) = var/www/
-    'ret(3) = var/www/htdocs/
-    push ret(), fullpath
-    tmp = Split(fullpath, "/")
-    Dim it
-    For i = 0 To UBound(tmp)
-        it = it & IIf(it = Empty, Empty, "/") & tmp(i)
-        push ret(), it
-    Next
-    GetPathsInStep = ret()
-End Function
-
-Sub pop(ary, Optional Count = 1) 'this modifies parent ary obj
-    If Count > UBound(ary) Then ReDim ary(0)
-    For i = 1 To Count
-        ReDim Preserve ary(UBound(ary) - 1)
-    Next
-End Sub
-
-Function ExtractValue(s)
-        On Error Resume Next
-        ExtractValue = Mid(s, InStr(s, "=") + 1, Len(s))
-End Function
-
-Function ExtractKey(s)
-        On Error Resume Next
-        ExtractKey = Mid(s, 1, InStr(s, "=") - 1)
-End Function
 
 '---------------------------------------------------------------------
 'Sleuth specific document parsing routines below
@@ -389,7 +191,11 @@ Function GetScripts(d As HTMLDocument, Optional ary = Empty)
         For i = 0 To d.scripts.length - 1
           With d.scripts(i)
             it = .src
-            If it = Empty Then it = "Embeded Script"
+            If it = Empty Then
+                it = d.scripts(i).innerHTML
+            Else
+                it = "SRC = " & it
+            End If
             If IsArray(ary) Then push ary, "Script - " & it _
             Else push ret(), it
           End With
@@ -403,9 +209,11 @@ Function GetComments(d As HTMLDocument)
         Dim tmp()
         doc = ParseScript(d.body.innerHTML)
         c = Split(doc, "<!")
-        For i = 0 To UBound(c)
-            push tmp, "<!" & Mid(c(i), 1, InStr(1, c(i), ">"))
-        Next
+        If UBound(c) > 0 Then
+            For i = 0 To UBound(c)
+                push tmp, "<!" & Mid(c(i), 1, InStr(1, c(i), ">"))
+            Next
+        End If
         If aryIsEmpty(tmp) Then push tmp, "No Comments in Document"
         GetComments = tmp()
 End Function
@@ -426,7 +234,7 @@ End Function
 Function GetPageStats(d As HTMLDocument, ret, Optional IncludeSource As Boolean = False)
     push ret, String(75, "-") & vbCrLf
     push ret, vbCrLf & vbCrLf & "Page: " & d.location.href
-    push ret, "Cookie: " & IIf(d.Cookie = "", "No Cookies In Document", d.Cookie) & vbCrLf
+    push ret, "Cookie: " & IIf(d.cookie = "", "No Cookies In Document", d.cookie) & vbCrLf
     push ret, "Links: " & vbCrLf & vbTab & Join(GetLinks(d), vbCrLf & vbTab)
     push ret, "Images: " & vbCrLf & vbTab & Join(GetImages(d), vbCrLf & vbTab)
     push ret, "Scripts: " & vbCrLf & vbTab & Join(GetScripts(d), vbCrLf & vbTab)
@@ -448,24 +256,6 @@ Function GetPageStats(d As HTMLDocument, ret, Optional IncludeSource As Boolean 
         On Error Resume Next
         push ret, Join(GetPageStats(d.frames(i).Document, ret, IncludeSource), vbCrLf & vbTab & vbTab & vbTab)
     Next
-End Function
-
-Function GetScriptContent(d As HTMLDocument, index)
-    On Error GoTo oops
-    tmp = Split(d.body.innerHTML, "<script", , vbTextCompare)
-    Dim ret()
-    For i = 1 To UBound(tmp)
-        s = InStr(1, tmp(i), "</script>", 1)
-        If s < 1 Then s = Len(tmp(i))
-        push ret(), "<script " & Mid(tmp(i), 1, s + 9) & vbCrLf
-    Next
-    GetScriptContent = Join(ret, vbCrLf)
-    Exit Function
-oops:
-    l = Len(d.body.innerHTML)
-    Msg = "Page probably has scripts in <head> section which throws off index for all scripts!"
-    If l = 0 Then Msg = " Page Content Length was 0, this occurs when page author does not include a <body> tag."
-    MsgBox "Oops there was an error extracting script," & vbCrLf & vbCrLf & Msg, vbExclamation
 End Function
 
 Function GetFormHTML(d As HTMLDocument, index)
@@ -513,11 +303,11 @@ Sub HTMLTransform(d As HTMLDocument, h As Integer)
     tmp = d.body.innerHTML
     Select Case h
         Case 0: 'EmbedScript
-            If Not FileExists(frmMain.EmbedableScriptEnv) Then
-                MsgBox frmMain.EmbedableScriptEnv & " not found!", vbCritical
+            If Not FileExists(EmbedableScriptEnv) Then
+                MsgBox EmbedableScriptEnv & " not found!", vbCritical
                 Exit Sub
             End If
-            tmp = tmp & "<HR>" & ReadFile(frmMain.EmbedableScriptEnv) & " "
+            tmp = tmp & "<HR>" & ReadFile(EmbedableScriptEnv) & " "
         Case 1: 'Hidden2Text
             tmp = Replace(tmp, "type=hidden", "type=text", , , vbTextCompare) & " "
         Case 2: 'Select2Text
@@ -527,7 +317,7 @@ Sub HTMLTransform(d As HTMLDocument, h As Integer)
         Case 3: 'Check2Text
             tmp = Replace(tmp, "type=check", "type=text ", , , vbTextCompare)
         Case 4: 'Radio2Text
-        
+            MsgBox "Soon"
         Case 5: 'BreakScripts
             tmp = ParseScript(tmp)
     End Select
@@ -537,3 +327,91 @@ Sub HTMLTransform(d As HTMLDocument, h As Integer)
 Exit Sub
 oops: MsgBox "Err in HTML transform: " & Err.Description, vbCritical
 End Sub
+
+Sub GenReport()
+    Dim ret(), IncludeSource As Boolean
+    IncludeSource = IIf(MsgBox("Do you want to include each docs body.innerHTML ?", vbQuestion + vbYesNo) = vbYes, True, False)
+    fpath = App.path & "\Sleuth_Report.txt"
+    
+    push ret(), vbCrLf & String(75, "-")
+    push ret(), Date & String(5, " ") & Time & String(5, " ") & "Saved as: " & fpath & vbCrLf
+    push ret(), "If you want to save this file be sure to do a SAVE AS or"
+    push ret(), "else it will be automatically overwritten by next report!" & vbCrLf
+    
+    Call GetPageStats(frmMain.wb.Document, ret, IncludeSource)
+    WriteFile fpath, Join(ret, vbCrLf)
+    Shell "notepad """ & fpath & """", vbNormalFocus
+    
+End Sub
+
+Function GetSelectedHtml(d As HTMLDocument) As String
+On Error GoTo oops
+    'Dim k As Object
+    'Set k = d.selection.createRange
+    'GetSelectedHtml = CStr(k.htmlText)
+    
+    Set objSelDocument = d
+    Set objSelection = d.selection.createRange
+    GetSelectedHtml = CStr(objSelection.htmlText)
+
+Exit Function
+oops:
+MsgBox Err.Description, vbExclamation, "GetSelectedHtml"
+End Function
+
+
+
+Function TurnFormIntoQueryString(d As HTMLDocument, formIndex As Integer) As String
+    Dim url As String
+    Dim ret() As String
+    
+    With d.Forms(formIndex)
+        q = InStr(.Action, "?")
+        If q > 0 Then
+            If .method = "POST" Then
+                MsgBox "This form action is sent with querystring arguments...because of the way this works now they will all be grouped with other form values..this may cause problems because this form is a POST and they will be in thePOST body now sorry"
+            End If
+        End If
+        
+        If InStr(.Action, "http://") < 1 Then
+            If InStr(8, d.location, "/") Then
+                'remove any querystring args from current page
+                base = Mid(d.location, 1, InStrRev(d.location, "/"))
+            Else
+                base = d.location
+            End If
+            url = Replace(base, .Action, Empty) & "/" & .Action & IIf(q > 0, "&", "?")
+            MsgBox "Your going to have to verify path is right", vbInformation
+        Else
+            url = .Action & IIf(q > 0, "&", "?")
+        End If
+        
+        For j = 0 To .elements.length - 1
+            url = url & .elements(j).Name & "=" & .elements(j).value & "&"
+        Next
+    End With
+    
+    'this sucks
+    url = Replace(url, "://", ":/:")
+    While InStr(url, "//") > 0
+        url = Replace(url, "//", "/")
+    Wend
+    url = Replace(url, ":/:", "://")
+    
+    TurnFormIntoQueryString = url
+    
+    'MsgBox url
+    
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
