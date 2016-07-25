@@ -1,0 +1,16 @@
+
+<!-- have to embed script this way or wont run :( -->
+<img src="javascript:var hasRun;function Explain(){document.Compose.Body.value='This is a simple script injector so you can play with a remote pages document, objects, and values without the need to goto edit source. This is priceless for super huge deeply nested framed pages who endlessly hop between frames for values, functions and objects!'}">
+
+<img src="javascript:function logit(it){if(!hasRun){document.Compose.spare.value='';document.Compose.error.value='';hasRun=true}document.Compose.spare.value+=it+'\n'}">
+
+<form name="Compose">
+<textarea name="Body" rows=8 cols=85 wrap=virtual></textarea>
+<input type=button onclick="Explain()" value="Explain this"> 
+<input type=button onclick="eval(document.Compose.Body.value)" value="Run Script">
+<textarea name="spare" rows=4 cols=85 wrap=virtual>
+name = document.Compose.spare.value 
+this is resevoir to send processed data to
+embeded function logit(val) auto adds data here too
+</textarea><br>
+</form>

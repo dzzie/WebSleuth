@@ -1,0 +1,24 @@
+DISCLAIMER / LICENSE
+
+You guys know the drill....this software is provided as
+is with absolutly no warrenty as to usability or function.
+
+It is provided in source code form and you are advised not 
+to run it unless you have implicit knowledge of its function
+and are confortable with its coding and execution.
+
+If binaries are provided they are merely given as a convience
+and are in no way guaranteed free from defect or as to what source 
+from which they may be derived.
+
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DAMAGES
+
+You are free to resuse the code components i have created in
+this project in both private and non-commercial products so long as you
+include both a link to my site and the source to the component in your
+distibution.
+
+I release my work open source so that others may learn from it and to work
+torwards creating a free robust component library for the public. It has been
+only through the work and sharing or others that i have learned programming. I
+recoginize this as real and in such do what i can to give back.

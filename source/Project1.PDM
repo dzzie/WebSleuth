@@ -1,0 +1,197 @@
+[Root]
+Most Recent Package=Standard Setup Package 1
+
+
+[Package|Standard Setup Package 1|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=c:\Projects\web sleuth\Package
+
+[Package|Standard Setup Package 1|Configure DAO ISAMs]
+Applicable=No
+
+[Package|Standard Setup Package 1|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|Standard Setup Package 1|Files Found]
+LastList.txt=C:\Projects\web sleuth\plugins\LastList.txt
+LICENSE.txt=C:\Projects\web sleuth\LICENSE.txt
+SleuthHelp.chm=C:\Projects\web sleuth\SleuthHelp.chm
+ExampleScript.txt=C:\Projects\web sleuth\plugins\ExampleScript.txt
+source.zip=C:\Projects\web sleuth\source.zip
+
+[Package|Standard Setup Package 1|Files Released]
+README.txt=
+ABOUT.txt=
+SleuthHelp.CHI=
+
+[Package|Standard Setup Package 1|Missing Dependency Information]
+C:\WINNT\system32\mshtml.tlb=
+D:\Projects\web sleuth\Plugins\testInputs.dll=
+C:\WINNT\system32\wininet.dll=
+C:\Projects\web sleuth\plugins\testInputs.dll=
+
+[Package|Standard Setup Package 1|Out-of-Date Dependency Information]
+C:\WINNT\system32\RICHTX32.OCX=
+
+[Package|Standard Setup Package 1|Files Added]
+testinputs.dll=
+source.zip=
+license.txt=
+sleuthhelp.chm=
+examplescript.txt=
+lastlist.txt=
+c:\projects\web sleuth\source\close.ico=
+c:\projects\web sleuth\source\embedablescriptenv.html=
+c:\projects\web sleuth\source\open.ico=
+c:\projects\web sleuth\add sleuth 2 explorerbar.vbs=
+c:\projects\web sleuth\proxylist.txt=
+c:\projects\web sleuth\remove sleuth from explorerbar.vbs=
+c:\projects\web sleuth\changelog.txt=
+
+[Package|Standard Setup Package 1|Files Removed]
+c:\winnt\hh.exe=
+c:\winnt\system32\hhctrl.ocx=
+c:\winnt\system32\itircl.dll=
+c:\winnt\system32\itss.dll=
+c:\winnt\system32\wininet.dll=
+c:\winnt\system32\mshtml.tlb=
+
+[Package|Standard Setup Package 1|Files In Project]
+C:\WINNT\system32\msvbvm60.dll=Yes
+C:\WINNT\system32\OLEAUT32.DLL=Yes
+C:\WINNT\system32\OLEPRO32.DLL=Yes
+C:\WINNT\system32\ASYCFILT.DLL=Yes
+C:\WINNT\system32\STDOLE2.TLB=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\WINNT\system32\mshtml.tlb=No
+C:\WINNT\system32\RICHTX32.OCX=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\RICHED32.DLL=Yes
+C:\WINNT\system32\MSWINSCK.OCX=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINNT\system32\VB6STKIT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+C:\WINNT\system32\hhctrl.ocx=No
+C:\WINNT\system32\itss.dll=No
+C:\WINNT\system32\itircl.dll=No
+C:\WINNT\hh.exe=No
+C:\WINNT\system32\wininet.dll=No
+C:\Projects\web sleuth\WebSleuth.exe=Yes
+C:\Projects\web sleuth\plugins\testInputs.dll=Yes
+C:\Projects\web sleuth\source.zip=Yes
+C:\Projects\web sleuth\LICENSE.txt=Yes
+C:\Projects\web sleuth\SleuthHelp.chm=Yes
+C:\Projects\web sleuth\plugins\ExampleScript.txt=Yes
+C:\Projects\web sleuth\plugins\LastList.txt=Yes
+C:\Projects\web sleuth\source\close.ico=Yes
+C:\Projects\web sleuth\source\EmbedableScriptEnv.html=Yes
+C:\Projects\web sleuth\source\open.ico=Yes
+C:\Projects\web sleuth\Add Sleuth 2 Explorerbar.vbs=Yes
+C:\Projects\web sleuth\proxylist.txt=Yes
+C:\Projects\web sleuth\Remove Sleuth From Explorerbar.vbs=Yes
+C:\Projects\web sleuth\ChangeLog.txt=Yes
+
+[Package|Standard Setup Package 1|Configure Registry Files]
+Applicable=No
+
+[Package|Standard Setup Package 1|Configure Remote Servers]
+Applicable=No
+
+[Package|Standard Setup Package 1|Install Locations]
+D:\Projects\web sleuth\WebSleuth.exe=$(AppPath)
+C:\WINNT\system32\msvbvm60.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\OLEAUT32.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\OLEPRO32.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\ASYCFILT.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\STDOLE2.TLB=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\mshtml.tlb=$(WinSysPath)
+C:\WINNT\system32\RICHTX32.OCX=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\RICHED32.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\MSWINSCK.OCX=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINNT\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+D:\Projects\web sleuth\Plugins\testInputs.dll=$(AppPath)\Plugins\
+D:\Projects\web sleuth\Source.zip=$(AppPath)
+D:\Projects\web sleuth\ABOUT.txt=$(AppPath)
+D:\Projects\web sleuth\LICENSE.txt=$(AppPath)
+D:\Projects\web sleuth\README.txt=$(AppPath)
+D:\Projects\web sleuth\SleuthHelp.chm=$(AppPath)
+D:\Projects\web sleuth\Plugins\ExampleScript.txt=$(AppPath)\Plugins\
+D:\Projects\web sleuth\Plugins\LastList.txt=$(AppPath)\Plugins\
+C:\Projects\web sleuth\WebSleuth.exe=$(AppPath)
+C:\Projects\web sleuth\plugins\testInputs.dll=$(WinSysPath)
+C:\Projects\web sleuth\source.zip=$(AppPath)
+C:\Projects\web sleuth\LICENSE.txt=$(AppPath)
+C:\Projects\web sleuth\SleuthHelp.chm=$(AppPath)
+C:\Projects\web sleuth\plugins\ExampleScript.txt=$(AppPath)\plugins
+C:\Projects\web sleuth\plugins\LastList.txt=$(AppPath)\plugins
+C:\Projects\web sleuth\source\close.ico=$(AppPath)\source
+C:\Projects\web sleuth\source\EmbedableScriptEnv.html=$(AppPath)\source
+C:\Projects\web sleuth\source\open.ico=$(AppPath)\source
+C:\Projects\web sleuth\Add Sleuth 2 Explorerbar.vbs=$(AppPath)
+C:\Projects\web sleuth\proxylist.txt=$(AppPath)
+C:\Projects\web sleuth\Remove Sleuth From Explorerbar.vbs=$(AppPath)
+C:\Projects\web sleuth\ChangeLog.txt=$(AppPath)
+
+[Package|Standard Setup Package 1|Configure Shared Files]
+Applicable=Yes
+D:\Projects\web sleuth\WebSleuth.exe=No
+D:\Projects\web sleuth\Plugins\testInputs.dll=No
+D:\Projects\web sleuth\Source.zip=No
+D:\Projects\web sleuth\ABOUT.txt=No
+D:\Projects\web sleuth\LICENSE.txt=No
+D:\Projects\web sleuth\README.txt=No
+D:\Projects\web sleuth\SleuthHelp.chm=No
+D:\Projects\web sleuth\Plugins\ExampleScript.txt=No
+D:\Projects\web sleuth\Plugins\LastList.txt=No
+C:\Projects\web sleuth\WebSleuth.exe=No
+C:\Projects\web sleuth\source.zip=No
+C:\Projects\web sleuth\LICENSE.txt=No
+C:\Projects\web sleuth\SleuthHelp.chm=No
+C:\Projects\web sleuth\plugins\ExampleScript.txt=No
+C:\Projects\web sleuth\plugins\LastList.txt=No
+C:\Projects\web sleuth\source\close.ico=No
+C:\Projects\web sleuth\source\EmbedableScriptEnv.html=No
+C:\Projects\web sleuth\source\open.ico=No
+C:\Projects\web sleuth\Add Sleuth 2 Explorerbar.vbs=No
+C:\Projects\web sleuth\proxylist.txt=No
+C:\Projects\web sleuth\Remove Sleuth From Explorerbar.vbs=No
+C:\Projects\web sleuth\ChangeLog.txt=No
+
+[Package|Standard Setup Package 1|Distribution]
+Type=single
+Size=
+Title=WebSleuth
+
+[Package|Standard Setup Package 1|Package]
+PackageFolder=c:\Projects\web sleuth\Package
+ProjectFolder=C:\Projects\web sleuth\source
+ServerSideCab=
+File1=c:\Projects\web sleuth\Package\setup.exe
+File2=c:\Projects\web sleuth\Package\Setup.Lst
+File3=c:\Projects\web sleuth\Package\WebSleuth.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz
+
+[Package|Standard Setup Package 1|IconGroups]
+Group0=WebSleuth
+PrivateGroup0=False
+Parent0=$(Programs)
+
+[Package|Standard Setup Package 1|WebSleuth]
+Icon1=WebSleuth.exe
+Title1=WebSleuth
+StartIn1=$(AppPath)
+Key1=Icon5
+Icon2=SleuthHelp.chm
+Title2=Sleuth Help
+StartIn2=$(AppPath)
+Key2=Icon6
+Icon3=LICENSE.txt
+Title3=LICENSE
+StartIn3=$(AppPath)
+Key3=Icon7

