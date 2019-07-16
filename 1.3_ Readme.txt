@@ -42,7 +42,7 @@ added query string analyzer that breaks down elements and holds in list to edit
     <QUERYSTRING> will be automatically replaced by actual query string cool huh
 
 if you think that is not cool..then just hit the check box and turn it off :P (preference saved)
-be careful abotu escaped arguments...since this is such a complex flow of events and can be
+be careful about escaped arguments...since this is such a complex flow of events and can be
 initalized from so mny places you are on your own..I will try to help out more eventually 
 (cause well I am lazy and hate repetive tasks) btu there is no smart logic yet
 
